@@ -1,0 +1,130 @@
+
+
+
+
+                                            //JDBC Assignment
+
+import java.sql.*;
+import java.util.Scanner;
+public class Database1 
+{
+
+	public static void main(String[] args)
+	{
+		Connection con=null;
+		 ResultSet rs=null;
+		 Scanner sc = null;
+		 
+		 
+	 try {
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		System.out.println("connect");
+		sc=new Scanner(System.in);
+	} catch (ClassNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 
+	try {
+		con = DriverManager.getConnection("jdbc:oracle:thin:@192.168.5.177:1521:NBCCBISSUE","scott","tiger");
+		System.out.println("connected");
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} 
+	 	Statement stmt=null;
+		try {
+			stmt = con.createStatement();
+			System.out.println("connect to database");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	 try {
+		 //.Find customer details of the given customer account
+		 System.out.println("enter the CUST_ID to select");
+		 int id=sc.nextInt();
+		ResultSet rs1=stmt.executeQuery("select * from bankingdatabase where CUST_ID="+id);
+		while(rs1.next())
+		{ System.out.println(" data retrieve");
+			System.out.println(rs1.getInt(1)+" "+rs1.getString(2)+" "+rs1.getString(3)+" "+rs1.getString(4));
+		}
+		//Get balance of the given customer account
+		System.out.println("Enter customer ID to get balance amount:");
+		 int id2=sc.nextInt();
+		String query2="select BALANCE from accountcustomer1 where CUSTO_ID="+id2;
+		 rs=stmt.executeQuery(query2);
+	while(rs.next())
+	{
+	System.out.println("The balance is:");
+		System.out.println(rs.getInt("BALANCE"));
+	}
+	 //Deposit amount into the given customer account
+
+	System.out.println("Enter customer ID to deposit amount:");
+	 int id3=sc.nextInt();
+	 ResultSet rs5=stmt.executeQuery("select balance from accountcustomer1 where CUSTO_ID="+id3);
+	 if(rs5.next())
+		{
+	int balance=rs5.getInt(1);
+		System.out.println("Enter amount to deposit:");
+		int amount1=sc.nextInt();
+       balance=balance+amount1;
+		String query3="update accountcustomer1 SET BALANCE="+balance+" WHERE CUSTO_ID="+id3;
+	     stmt.executeUpdate(query3);
+       System.out.println("balance updated is"+balance);}
+	 
+	 // Withdraw amount from the given customer account (minimum balance should be 1000) 
+	 
+		System.out.println("Enter customer ID to withdraw amount:");
+		int id1=sc.nextInt();
+		 ResultSet rs2=stmt.executeQuery("select balance from accountcustomer1 where CUSTO_ID="+id1);
+		if(rs2.next())
+		{
+	int bal=rs2.getInt(1);
+		System.out.println("Enter amount to withdraw:");
+		int amount=sc.nextInt();
+ bal=bal-amount;
+		if(bal>=1000)
+		{
+	 String query4="update accountcustomer1 SET BALANCE="+bal+"WHERE CUSTO_ID="+id1+ "AND BALANCE>1000";
+	 stmt.executeUpdate(query4);
+System.out.println("amount withdrawed is"+amount);
+		}
+		}
+	 //Show all the customer details  and account balances
+	 
+	 String query5="select CUST_ID,CUST_NAME,ADDRESS,ACC_TYPE,BALANCE from bankingdatabase,accountcustomer1 WHERE bankingdatabase.CUST_ID=accountcustomer1.CUSTO_ID";
+	rs=stmt.executeQuery(query5);
+	while(rs.next())
+	{ System.out.println(" all customer details in both tables is");
+		System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3)+" "+rs.getString(4)+" "+rs.getInt(5));
+	}
+		
+
+		}
+		
+	 catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 
+	 
+	 	try {
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+} 	
+
+		
+
+
+
+
+
+
